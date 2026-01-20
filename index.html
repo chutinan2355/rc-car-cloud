@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>RC CAR CLOUD CONTROL</title>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <style>
+    body { font-family: Arial; text-align: center; }
+    button { font-size: 20px; margin: 10px; padding: 15px 30px; }
+  </style>
+</head>
+<body>
+
+<h1>🚗 RC CAR (Cloud Control)</h1>
+<p id="status">Connecting...</p>
+
+<button onclick="send('forward')">⬆ Forward</button><br>
+<button onclick="send('left')">⬅ Left</button>
+<button onclick="send('stop')">⏹ Stop</button>
+<button onclick="send('right')">➡ Right</button><br>
+<button onclick="send('backward')">⬇ Backward</button><br><br>
+
+<button onclick="light('on')">💡 LED ON</button>
+<button onclick="light('off')">💡 LED OFF</button><br><br>
+
+<button onmousedown="horn('on')" onmouseup="horn('off')">🔊 HORN</button>
+
+<script>
+  const client = mqtt.connect('ws://broker.hivemq.com:8000/mqtt', {
+    clientId: 'WEB_RC_' + Math.random().toString(16).substr(2, 8)
+  });
+
+  client.on('connect', () => {
+    document.getElementById('status').innerText = '🟢 Connected to HiveMQ';
+  });
+
+  function send(cmd) {
+    client.publish('rccar/move', cmd);
+  }
+
+  function light(state) {
+    client.publish('rccar/light', state);
+  }
+
+  function horn(state) {
+    client.publish('rccar/horn', state);
+  }
+</script>
+
+</body>
+</html>
